@@ -60,6 +60,7 @@ public class DeviceScan extends ListActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //getActionBar().setTitle("BLE Device Scan");
         mHandler = new Handler();
 
         ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
@@ -124,8 +125,12 @@ public class DeviceScan extends ListActivity {
         // 사용자에게 사용 권한을 부여하여 대화 상자를 표시하려는 의도를 표시합니다.
         if (!mBluetoothAdapter.isEnabled()) {
             if (!mBluetoothAdapter.isEnabled()) {
-                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+                try{
+                    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+                }catch(SecurityException e){
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -160,36 +165,45 @@ public class DeviceScan extends ListActivity {
     protected void onListItemClick(ListView l, View v, int position, long id) {
         final BluetoothDevice device = mLeDeviceListAdapter.getDevice(position);
         if (device == null) return;
-        final Intent intent = new Intent(this, DeviceControlActivity.class);
-        intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_NAME, device.getName());
-        intent.putExtra(DeviceControlActivity.EXTRAS_DEVICE_ADDRESS, device.getAddress());
-        if (mScanning) {
-            mBluetoothAdapter.stopLeScan(mLeScanCallback);
-            mScanning = false;
+        final Intent intent = new Intent(this, DeviceControl.class);
+        try{
+            intent.putExtra(DeviceControl.EXTRAS_DEVICE_NAME, device.getName());
+            intent.putExtra(DeviceControl.EXTRAS_DEVICE_ADDRESS, device.getAddress());
+            if (mScanning) {
+                mBluetoothAdapter.stopLeScan(mLeScanCallback);
+                mScanning = false;
+            }
+        }catch(SecurityException e){
+            e.printStackTrace();
         }
         startActivity(intent);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     private void scanLeDevice(final boolean enable) {
-        if (enable) {
-            //설정해놓은 블루투스 장치 검색시간이 지나면 검색 중지
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mScanning = false;
-                    mBluetoothAdapter.stopLeScan(mLeScanCallback);
-                    invalidateOptionsMenu();
-                }
-            }, SCAN_PERIOD);
+        try{
+            if (enable) {
+                //설정해놓은 블루투스 장치 검색시간이 지나면 검색 중지
+                mHandler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mScanning = false;
+                        mBluetoothAdapter.stopLeScan(mLeScanCallback);
+                        invalidateOptionsMenu();
+                    }
+                }, SCAN_PERIOD);
 
-            mScanning = true;
-            mBluetoothAdapter.startLeScan(mLeScanCallback);
-        } else {
-            mScanning = false;
-            mBluetoothAdapter.stopLeScan(mLeScanCallback);
+                mScanning = true;
+                mBluetoothAdapter.startLeScan(mLeScanCallback);
+            } else {
+                mScanning = false;
+                mBluetoothAdapter.stopLeScan(mLeScanCallback);
+            }
+            invalidateOptionsMenu();
+        }catch(SecurityException e){
+            e.printStackTrace();
         }
-        invalidateOptionsMenu();
+
     }
 
     // 장치를 발견했을때 리스트에 고정시켜놓는듯.
@@ -200,7 +214,7 @@ public class DeviceScan extends ListActivity {
         public LeDeviceListAdapter() {
             super();
             mLeDevices = new ArrayList<BluetoothDevice>();
-            mInflator = DeviceScanActivity.this.getLayoutInflater();
+            mInflator = DeviceScan.this.getLayoutInflater();
         }
 
         public void addDevice(BluetoothDevice device) {
@@ -247,13 +261,16 @@ public class DeviceScan extends ListActivity {
             }
 
             BluetoothDevice device = mLeDevices.get(i);
-            final String deviceName = device.getName();
-            if (deviceName != null && deviceName.length() > 0)
-                viewHolder.deviceName.setText(deviceName);
-            else
-                viewHolder.deviceName.setText(R.string.unknown_device);
-            viewHolder.deviceAddress.setText(device.getAddress());
-
+            try{
+                final String deviceName = device.getName();
+                if (deviceName != null && deviceName.length() > 0)
+                    viewHolder.deviceName.setText(deviceName);
+                else
+                    viewHolder.deviceName.setText("Unknowm Device");
+                viewHolder.deviceAddress.setText(device.getAddress());
+            }catch(SecurityException e){
+                e.printStackTrace();
+            }
             return view;
         }
     }
