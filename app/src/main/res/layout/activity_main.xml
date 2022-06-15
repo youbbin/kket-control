@@ -39,11 +39,16 @@
        <TextView
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
-           android:text="2700K"/>
+           android:text="2700K" />
        <SeekBar
-           android:layout_width="match_parent"
+           android:layout_width="280dp"
            android:layout_height="wrap_content"
            android:id="@+id/seekbar_2700"/>
+       <TextView
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:text="0"
+           android:id="@+id/textview_num1"/>
    </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -55,9 +60,14 @@
             android:layout_height="wrap_content"
             android:text="4000K"/>
         <SeekBar
-            android:layout_width="match_parent"
+            android:layout_width="280dp"
             android:layout_height="wrap_content"
-            android:id="@+id/seekbar_4000"/>/>
+            android:id="@+id/seekbar_4000"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:id="@+id/textview_num2"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -69,9 +79,14 @@
             android:layout_height="wrap_content"
             android:text="5000K"/>
         <SeekBar
-            android:layout_width="match_parent"
+            android:layout_width="280dp"
             android:layout_height="wrap_content"
-            android:id="@+id/seekbar_5000"/>/>
+            android:id="@+id/seekbar_5000"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:id="@+id/textview_num3"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -83,9 +98,14 @@
             android:layout_height="wrap_content"
             android:text="6500K"/>
         <SeekBar
-            android:layout_width="match_parent"
+            android:layout_width="280dp"
             android:layout_height="wrap_content"
-            android:id="@+id/seekbar_6500"/>/>
+            android:id="@+id/seekbar_6500"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"
+            android:id="@+id/textview_num4"/>
     </LinearLayout>
 
     <Button

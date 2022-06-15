@@ -12,10 +12,17 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ExpandableListView;
+import android.widget.SeekBar;
 import android.widget.SimpleExpandableListAdapter;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,8 +40,12 @@ public class DeviceControl extends Activity {
     private BluetoothGattCharacteristic mNotifyCharacteristic;
     private List<BluetoothGattService> gattServices;
     private ArrayList<ArrayList<BluetoothGattCharacteristic>> mGattCharacteristics = new ArrayList<ArrayList<BluetoothGattCharacteristic>>();
-    public static final String CC41_WRITE_UUID="0000ffe1-0000-1000-8000-00805f9b34fb";
-
+    public static final String CC41_WRITE_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb";
+    private SeekBar seekbar_2700, seekbar_4000, seekbar_5000, seekbar_6500;
+    private SeekBar[] seekbars;
+    private Button button_set, button_on, button_off;
+    private TextView textview_name, textview_address;
+    private TextView[] textNum;
 
     // 서비스 라이프사이클을 관리하는 코드입니다.
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -125,14 +136,66 @@ public class DeviceControl extends Activity {
         mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
         mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
 
+        seekbar_2700 = (SeekBar) findViewById(R.id.seekbar_2700);
+        seekbar_4000 = (SeekBar) findViewById(R.id.seekbar_4000);
+        seekbar_5000 = (SeekBar) findViewById(R.id.seekbar_5000);
+        seekbar_6500 = (SeekBar) findViewById(R.id.seekbar_6500);
+        seekbars[0] = seekbar_2700;
+        seekbars[1] = seekbar_4000;
+        seekbars[2] = seekbar_5000;
+        seekbars[3] = seekbar_6500;
+        textNum = new TextView[4];
+        textNum[0] = (TextView) findViewById(R.id.textview_num1);
+        textNum[1] = (TextView) findViewById(R.id.textview_num2);
+        textNum[2] = (TextView) findViewById(R.id.textview_num3);
+        textNum[3] = (TextView) findViewById(R.id.textview_num4);
+        button_set = (Button) findViewById(R.id.button_set);
+        button_on = (Button) findViewById(R.id.button_on);
+        button_off = (Button) findViewById(R.id.button_off);
 
+        textview_name = (TextView) findViewById(R.id.textview_name);
+        textview_address = (TextView) findViewById(R.id.textview_address);
+
+        textview_name.setText("Name : " + mDeviceName);
+        textview_address.setText("Address : " + mDeviceAddress);
+        setGattCharacteristic(); // 캐릭터 설정
+
+        button_on.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mBluetoothLeService == null || mNotifyCharacteristic == null) {
+                    Toast.makeText(v.getContext(), "연결 오류 : Characteristic 미설정", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                String on_packet = "0211FFFFFFFFFF03";
+                byte[] data = hexStringToByteArray(on_packet);
+                mBluetoothLeService.write(mNotifyCharacteristic, data);
+                Toast.makeText(v.getContext(), "조명을 소등하였습니다.", Toast.LENGTH_SHORT).show();
+
+                for(int i = 0; i < seekbars.length; i++){
+                    int index = i;
+                    seekbars[index].setProgress(255);
+                    textNum[index].setText("255");
+                }
+            }
+        });
     }
 
-    public void setGattCharacteristic(){
-        for ( ArrayList<BluetoothGattCharacteristic> service : mGattCharacteristics){
-            for(BluetoothGattCharacteristic characteristic : service){
-                if(characteristic.getUuid().equals(UUID.fromString(CC41_WRITE_UUID))){
-                    mNotifyCharacteristic=characteristic;
+    /* String -> 16진수 Byte */
+    private byte[] hexStringToByteArray(String str) {
+        int len = str.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(str.charAt(i), 16) << 4) + Character.digit(str.charAt(i + 1), 16));
+        }
+        return data;
+    }
+
+    public void setGattCharacteristic() {
+        for (ArrayList<BluetoothGattCharacteristic> service : mGattCharacteristics) {
+            for (BluetoothGattCharacteristic characteristic : service) {
+                if (characteristic.getUuid().equals(UUID.fromString(CC41_WRITE_UUID))) {
+                    mNotifyCharacteristic = characteristic;
                 }
             }
         }
