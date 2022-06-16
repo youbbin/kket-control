@@ -125,12 +125,9 @@ public class DeviceScan extends ListActivity {
         // 사용자에게 사용 권한을 부여하여 대화 상자를 표시하려는 의도를 표시합니다.
         if (!mBluetoothAdapter.isEnabled()) {
             if (!mBluetoothAdapter.isEnabled()) {
-                try{
-                    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-                }catch(SecurityException e){
-                    e.printStackTrace();
-                }
+                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+
             }
         }
 
@@ -166,43 +163,37 @@ public class DeviceScan extends ListActivity {
         final BluetoothDevice device = mLeDeviceListAdapter.getDevice(position);
         if (device == null) return;
         final Intent intent = new Intent(this, DeviceControl.class);
-        try{
-            intent.putExtra(DeviceControl.EXTRAS_DEVICE_NAME, device.getName());
-            intent.putExtra(DeviceControl.EXTRAS_DEVICE_ADDRESS, device.getAddress());
-            if (mScanning) {
-                mBluetoothAdapter.stopLeScan(mLeScanCallback);
-                mScanning = false;
-            }
-        }catch(SecurityException e){
-            e.printStackTrace();
+
+        intent.putExtra(DeviceControl.EXTRAS_DEVICE_NAME, device.getName());
+        intent.putExtra(DeviceControl.EXTRAS_DEVICE_ADDRESS, device.getAddress());
+        if (mScanning) {
+            mBluetoothAdapter.stopLeScan(mLeScanCallback);
+            mScanning = false;
         }
+
         startActivity(intent);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     private void scanLeDevice(final boolean enable) {
-        try{
-            if (enable) {
-                //설정해놓은 블루투스 장치 검색시간이 지나면 검색 중지
-                mHandler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        mScanning = false;
-                        mBluetoothAdapter.stopLeScan(mLeScanCallback);
-                        invalidateOptionsMenu();
-                    }
-                }, SCAN_PERIOD);
+        if (enable) {
+            //설정해놓은 블루투스 장치 검색시간이 지나면 검색 중지
+            mHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    mScanning = false;
+                    mBluetoothAdapter.stopLeScan(mLeScanCallback);
+                    invalidateOptionsMenu();
+                }
+            }, SCAN_PERIOD);
 
-                mScanning = true;
-                mBluetoothAdapter.startLeScan(mLeScanCallback);
-            } else {
-                mScanning = false;
-                mBluetoothAdapter.stopLeScan(mLeScanCallback);
-            }
-            invalidateOptionsMenu();
-        }catch(SecurityException e){
-            e.printStackTrace();
+            mScanning = true;
+            mBluetoothAdapter.startLeScan(mLeScanCallback);
+        } else {
+            mScanning = false;
+            mBluetoothAdapter.stopLeScan(mLeScanCallback);
         }
+        invalidateOptionsMenu();
 
     }
 
@@ -261,16 +252,13 @@ public class DeviceScan extends ListActivity {
             }
 
             BluetoothDevice device = mLeDevices.get(i);
-            try{
-                final String deviceName = device.getName();
-                if (deviceName != null && deviceName.length() > 0)
-                    viewHolder.deviceName.setText(deviceName);
-                else
-                    viewHolder.deviceName.setText("Unknowm Device");
-                viewHolder.deviceAddress.setText(device.getAddress());
-            }catch(SecurityException e){
-                e.printStackTrace();
-            }
+
+            final String deviceName = device.getName();
+            if (deviceName != null && deviceName.length() > 0)
+                viewHolder.deviceName.setText(deviceName);
+            else
+                viewHolder.deviceName.setText("Unknowm Device");
+            viewHolder.deviceAddress.setText(device.getAddress());
             return view;
         }
     }

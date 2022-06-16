@@ -29,8 +29,14 @@
         android:layout_height="wrap_content"
         android:text="Address :  "
         android:layout_marginTop="0dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="0dp"
         android:id="@+id/textview_address"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Character UUID : "
+        android:layout_marginTop="0dp"
+        android:id="@+id/textview_char"/>
    <LinearLayout
        android:layout_width="match_parent"
        android:layout_height="match_parent"
@@ -41,7 +47,7 @@
            android:layout_height="wrap_content"
            android:text="2700K" />
        <SeekBar
-           android:layout_width="280dp"
+           android:layout_width="250dp"
            android:layout_height="wrap_content"
            android:id="@+id/seekbar_2700"/>
        <TextView
@@ -60,7 +66,7 @@
             android:layout_height="wrap_content"
             android:text="4000K"/>
         <SeekBar
-            android:layout_width="280dp"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:id="@+id/seekbar_4000"/>
         <TextView
@@ -79,7 +85,7 @@
             android:layout_height="wrap_content"
             android:text="5000K"/>
         <SeekBar
-            android:layout_width="280dp"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:id="@+id/seekbar_5000"/>
         <TextView
@@ -98,7 +104,7 @@
             android:layout_height="wrap_content"
             android:text="6500K"/>
         <SeekBar
-            android:layout_width="280dp"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:id="@+id/seekbar_6500"/>
         <TextView
@@ -120,8 +126,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:layout_marginHorizontal="30dp"
-        android:layout_marginTop="10dp">
+        android:layout_marginHorizontal="30dp">
 
         <Button
             android:layout_width="wrap_content"

@@ -1,18 +1,3 @@
-/*
- * Copyright (C) 2013 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 package com.example.kketcontrol_youbin;
 
@@ -35,6 +20,7 @@ import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,7 +28,7 @@ import java.util.UUID;
  * Service for managing connection and data communication with a GATT server hosted on a
  * given Bluetooth LE device.
  */
-public class BluetoothLeService extends Service {
+public class BluetoothLeService extends Service implements Serializable {
     private final static String TAG = BluetoothLeService.class.getSimpleName();
 
     private BluetoothManager mBluetoothManager;
@@ -149,7 +135,7 @@ public class BluetoothLeService extends Service {
             final byte[] data = characteristic.getValue();
             if (data != null && data.length > 0) {
                 final StringBuilder stringBuilder = new StringBuilder(data.length);
-                for(byte byteChar : data)
+                for (byte byteChar : data)
                     stringBuilder.append(String.format("%02X ", byteChar));
                 intent.putExtra(EXTRA_DATA, new String(data) + "\n" + stringBuilder.toString());
             }
@@ -210,11 +196,10 @@ public class BluetoothLeService extends Service {
      * Connects to the GATT server hosted on the Bluetooth LE device.
      *
      * @param address The device address of the destination device.
-     *
      * @return Return true if the connection is initiated successfully. The connection result
-     *         is reported asynchronously through the
-     *         {@code BluetoothGattCallback#onConnectionStateChange(android.bluetooth.BluetoothGatt, int, int)}
-     *         callback.
+     * is reported asynchronously through the
+     * {@code BluetoothGattCallback#onConnectionStateChange(android.bluetooth.BluetoothGatt, int, int)}
+     * callback.
      */
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     public boolean connect(final String address) {
@@ -295,7 +280,7 @@ public class BluetoothLeService extends Service {
      * Enables or disables notification on a give characteristic.
      *
      * @param characteristic Characteristic to act on.
-     * @param enabled If true, enable notification.  False otherwise.
+     * @param enabled        If true, enable notification.  False otherwise.
      */
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     public void setCharacteristicNotification(BluetoothGattCharacteristic characteristic,
@@ -329,8 +314,8 @@ public class BluetoothLeService extends Service {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    public void write(BluetoothGattCharacteristic characteristic, byte[] data){
-        if(mBluetoothAdapter==null || mBluetoothGatt==null){
+    public void write(BluetoothGattCharacteristic characteristic, byte[] data) {
+        if (mBluetoothAdapter == null || mBluetoothGatt == null) {
             System.out.println("BluetoothAdapter이 초기화되지 않았습니다.");
             return;
         }
@@ -338,11 +323,16 @@ public class BluetoothLeService extends Service {
         characteristic.setValue(data);
         characteristic.setWriteType(BluetoothGattCharacteristic.WRITE_TYPE_NO_RESPONSE);
         boolean result = mBluetoothGatt.writeCharacteristic(characteristic);
-        if(!result){
+        if (!result) {
             System.out.println("@@@@ write 실패");
-        }else {
+        } else {
             System.out.println("@@@@ write 성공");
         }
         return;
     }
+
+//    public void sendPacket(byte[] packet) {
+//        Log.d(TAG, "send packet to device");
+//        mBluetoothAdapter.writeCustomCharacteristic(packet);
+//    }
 }
